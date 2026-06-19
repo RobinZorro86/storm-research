@@ -2,7 +2,7 @@
 
 A source-grounded, multi-perspective research workflow for AI agents. It combines perspective-guided iterative questioning with explicit counter-evidence, contradiction mapping, auditable process metrics, and conservative knowledge closure.
 
-Version 1.1 replaces automation claims with an executable session contract, deterministic helpers, tests, and safe write defaults.
+Version 1.1.1 replaces automation claims with an executable session contract, deterministic helpers, tests, and safe write defaults.
 
 ## What it does
 
@@ -101,6 +101,31 @@ The default write target is `outputs/qa/`. The skill does not automatically modi
 - Git history.
 
 Formal ingestion remains the responsibility of the active knowledge-base workflow and requires its authorization.
+
+## Custom write targets
+
+By default, research outputs are written to `outputs/qa/` for safety. You can customize the output directory by setting an environment variable before starting the agent:
+
+```bash
+export STORM_OUTPUT_ROOT="/your/custom/path"
+# Or for a specific knowledge base
+export STORM_OUTPUT_ROOT="$HOME/Documents/Wiki"
+```
+
+This overrides the default `outputs/qa/` path for all write operations in the current session. The skill still respects safety rules: no automated edits to `concepts/`, `entities/`, `raw/`, or Git history unless explicitly configured.
+
+To permanently configure this for an agent profile, add the variable to the profile's environment or `.env` file:
+
+```bash
+# ~/.hermes/profiles/your-profile/.env
+STORM_OUTPUT_ROOT=/Users/username/Documents/Wiki
+```
+
+Or add it to the agent's plist/launchd environment variables:
+
+```bash
+launchctl setenv STORM_OUTPUT_ROOT /Users/username/Documents/Wiki
+```
 
 ## Quality metrics
 
