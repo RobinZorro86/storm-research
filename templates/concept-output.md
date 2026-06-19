@@ -5,7 +5,7 @@ updated: "{{YYYY-MM-DD}}"
 type: "concept"
 aliases: ["c-{{XXX}}"]
 tags: [{{主题标签}}, multi_perspective, compiled_truth, storm_research]
-status: "compiled"
+status: "ingestion_candidate"
 ---
 
 # {{研究主题}}
@@ -48,7 +48,7 @@ status: "compiled"
 |------|------|------|
 | 视角多样性 | {{N}}/5 | |
 | 矛盾检出 | {{N}} | |
-| 置信度均值 | {{0.XX}} | |
+| 未解决断言率 | {{0.XX}} | |
 | 偏见防御 | {{通过/未通过}} | |
 | 知识冲突检出 | {{通过/未通过}} | |
 
@@ -60,6 +60,8 @@ status: "compiled"
 
 {{双向链接到相关概念和实体}}
 
-## Timeline
+## Ingestion note
 
-- **{{YYYY-MM-DD}}** — 本次 STORM 研究完成，详见 [[raw/storm-logs/{{YYYY-MM-DD}}-{{slug}}-full-log]]
+This is an ingestion candidate. Do not write it into a governed concepts directory or replace Compiled Truth without authorization from the knowledge-base maintainer.
+
+Source QA report: `outputs/qa/{{YYYY-MM-DD}}-{{slug}}.md`

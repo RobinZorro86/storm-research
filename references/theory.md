@@ -1,97 +1,54 @@
-# STORM 自适应研究 Skill — 理论文档
+# Method provenance and boundaries
 
-## 理论基础
+## Three-layer provenance
 
-本 Skill 建立在三个概念之上：
+Do not present the entire workflow as Stanford STORM.
 
-1. **C-091 STORM 多视角研究方法**（Stanford OVAL Lab / NAACL 2024）
-2. **C-090 Skill 设计与四阶段沉淀法**（Mr Panda / 2026）
-3. **C-001 知识编译**（Compiled Truth + Timeline 格式规范）
+### 1. STORM-derived mechanisms
 
-完整理论文档存储于 Wiki：[[concepts/C-092-STORM自适应研究Skill架构设计]]
+The 2024 Stanford OVAL system researches and writes Wikipedia-like articles by:
 
----
+1. discovering diverse perspectives from related material;
+2. simulating conversations in which perspective-conditioned writers ask a source-grounded expert iterative follow-up questions;
+3. curating the collected information into an outline;
+4. generating and polishing a cited article.
 
-## 五层架构详解
+The transferable mechanism used by this skill is perspective-guided, iterative questioning grounded in retrieved sources. The reported 25-point organization and 10-point coverage improvements compare STORM with an outline-driven retrieval baseline in the paper's evaluation; they are not general accuracy guarantees.
 
-### L1: 语义解析层
+Primary sources:
 
-**设计目标**：自动推断研究主题的领域归属，无需用户手动指定。
+- [NAACL 2024 paper](https://aclanthology.org/2024.naacl-long.347/)
+- [Stanford OVAL implementation](https://github.com/stanford-oval/storm)
 
-**实现方式**：规则引擎（毫秒级，覆盖 80% 场景）+ LLM Fallback（复杂边缘案例）。
+### 2. Community workflow
 
-**推断规则**：
-- 关键词模式匹配 → domain 分类
-- 实体数量 → complexity 评估
-- 返回：{domain, complexity, key_entities, controversy_risk}
+The sequence “multi-perspective scan → contradiction map → synthesis → peer review” is a community adaptation recorded in the author's knowledge base. It is useful scaffolding, but it is not the architecture evaluated in the Stanford paper.
 
-**速度/准确度权衡**：
-- 规则引擎：ms 级，80% 准确率
-- LLM fallback：2-5s，95% 准确率
-- 默认先用规则引擎，规则引擎返回 "uncertain" 时 fallback
+### 3. storm-research extensions
 
-### L2: 视角引擎层
+This repository adds:
 
-**核心洞察**：视角之间的"张力"比数量更重要。
+- deterministic perspective selection and explicit tension pairs;
+- assertion-level evidence records;
+- counter-evidence search and layered contradiction mapping;
+- auditable coverage metrics;
+- conservative QA-draft knowledge closure.
 
-**视角库结构**：
-6 大类（tech/biz/sci/soc/eng/phil），每类 5-6 个视角，标注张力关系。
+These extensions are hypotheses to test through forward evaluation. Do not claim that they improve accuracy until benchmark evidence exists.
 
-**选择算法**：
-1. 取该 domain 的 2 个"必选项"
-2. 根据 complexity 从 pool 中采样补充
-3. 张力校验：确保至少有一对"对手视角"
-4. 允许用户注入自定义视角
+## Design principles
 
-### L3: 偏见防御层
+- Evidence quality matters more than the number of perspectives.
+- Useful tension can be factual, causal, normative, stakeholder-based, or temporal.
+- The system must not manufacture disagreement when sources converge.
+- A structured session is the source of truth; prose reports are rendered views.
+- Self-review supplements deterministic validation but does not replace independent review.
+- Knowledge-base writes follow the active repository's governance rules.
 
-**三级防御**：
+## Known limitations
 
-| 层级 | 名称 | 执行时机 | 技术 |
-|------|------|----------|------|
-| 一级 | 断言级来源标记 | Phase 1→2 流转时 | 强制元数据：[来源:xxx], [置信度:x.x] |
-| 二级 | 红队检验 | Phase 2 执行中 | 自动检索反方观点 + Devil's Advocate 配对 |
-| 三级 | 全局知识冲突检测 | Phase 2 结束时 | 对比 Wiki 已有知识，标记冲突等级 |
-
-**关键规则**：
-- 未标记来源的断言 → 不得进入 Phase 3
-- 置信度 <0.7 的断言 → 必须标注 ⚠️"待验证"
-- 与 Wiki 严重矛盾 → 暂停综合，提示用户裁决
-
-### L4: 工具编排层
-
-**设计哲学**：不是"建议搜索"，而是"自动执行搜索"。
-
-每阶段有精确的 tool call 序列，见 `references/tool-recipes.md`。
-
-### L5: 知识闭合层
-
-**五重闭合**：
-1. 概念闭合（C-XXX 页面）
-2. 索引闭合（index.md 更新）
-3. 实体闭合（entities/ 创建/更新）
-4. 关联闭合（Related 双向链接）
-5. 时间线闭合（Timeline 记录）
-
-**自动化程度**：Phase 1→2→3 全自动，Phase 4 半自动（需用户确认入库），L5 自动执行。
-
----
-
-## 为什么不是传统 STORM 的简单 Prompt 集合
-
-| 维度 | 传统 STORM | 本 Skill |
-|------|-----------|---------|
-| 视角 | 固定 5 个 | 自适应 5-7 个 |
-| 搜索 | 用户手动 | 自动执行 |
-| 偏见 | Phase 4 才检查 | 全程三级防御 |
-| 结果 | 散落对话中 | 自动入库 Wiki |
-| 进化 | 不变 | 每次使用后更新视角库和偏见规则 |
-
----
-
-## 已知局限与缓解
-
-1. **模型幻觉** → 置信度标记 + 多源验证 + 红队检验
-2. **时效性** → 实时搜索 + 时间戳标记
-3. **中文语料不足** → 中英混合检索 + 自动翻译摘要
-4. **成本高** → 复杂度自适应（简单主题只用 3 个视角，减少调用）
+- Retrieval can transfer source bias and omit long-tail evidence.
+- Multiple perspectives can create false balance.
+- Same-model review is correlated with generation errors.
+- Coverage metrics measure process compliance, not truth.
+- Public evidence may be insufficient for private, emerging, or high-stakes questions.

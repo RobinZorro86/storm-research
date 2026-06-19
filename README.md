@@ -1,147 +1,132 @@
-# STORM 自适应研究引擎
+# STORM Research Skill
 
-> 基于 Stanford STORM 方法论的多视角研究 Skill，自动推断最优视角组合，嵌入偏见防御与信源验证，产出可自动沉淀的高质量研究报告。
+A source-grounded, multi-perspective research workflow for AI agents. It combines perspective-guided iterative questioning with explicit counter-evidence, contradiction mapping, auditable process metrics, and conservative knowledge closure.
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/RobinZorro86/storm-research)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+Version 1.1 replaces automation claims with an executable session contract, deterministic helpers, tests, and safe write defaults.
 
-## 核心理念
+## What it does
 
-传统研究的问题不在于方法论本身，而在于它仍然把人当作"搬运工"。固定的视角需要用户手动触发，上下文压缩产生的人工摘要做完即丢，最关键的自评环节流于形式。
+- frames factual, causal, decision, forecast, and normative questions;
+- selects explainable perspectives across multiple domains;
+- requires opened sources for material factual claims;
+- searches for counter-evidence and preserves unresolved contradictions;
+- validates a structured research session before synthesis;
+- renders durable reports under an authorized `outputs/qa/` directory.
 
-**STORM 自适应研究引擎的愿景**：让 Agent 成为真正的研究搭档——根据研究主题的语义特征自动选择最优视角组合，在全过程嵌入偏见防御和信源验证，最终产出一份经过"知识闭合"的高质量研究报告。
+It does not guarantee truth, calibrated confidence, bias-detection accuracy, or complete research coverage.
 
----
+## Method provenance
 
-## 五层架构
+The workflow has three distinct layers:
 
-| 层级 | 名称 | 核心功能 | 效果 |
-|------|------|----------|------|
-| **L1** | 语义解析层 | 自动推断研究主题的领域归属和复杂度 | 无需手动指定视角 |
-| **L2** | 视角引擎层 | 从 6 大类 30+ 视角中智能匹配 Top-5~7 | 自适应 + 张力校验 |
-| **L3** | 偏见防御层 | 断言级来源标记 + 红队检验 + 知识冲突检测 | 全程自检，不流于形式 |
-| **L4** | 工具编排层 | 自动执行搜索、验证、深度阅读 | 从"建议搜索"→"自动搜索" |
-| **L5** | 知识闭合层 | 自动格式化、沉淀、索引 | 研究即资产 |
+1. **STORM-derived:** diverse perspective discovery, iterative perspective-guided questioning, retrieval grounding, and cited synthesis.
+2. **Community workflow:** multi-perspective scan, contradiction map, synthesis, and peer review.
+3. **This repository's extensions:** deterministic perspective selection, assertion-level evidence records, counter-evidence gates, auditable coverage metrics, and safe QA-draft closure.
 
----
+Stanford STORM itself researches and writes Wikipedia-like articles through perspective discovery, simulated source-grounded conversations, outline generation, and article generation. The four-phase workflow in this repository is not the original Stanford architecture. See the [NAACL 2024 paper](https://aclanthology.org/2024.naacl-long.347/) and [official implementation](https://github.com/stanford-oval/storm).
 
-## 触发词
+## Repository structure
 
-| 触发方式 | 关键词 |
-|----------|--------|
-| **完整启动** | `storm研究 {topic}` / `用 storm 方法研究 {topic}` / `多视角分析 {topic}` |
-| **单阶段** | `"多角度扫描" {topic}` → Phase 1<br>`"矛盾地图"` → Phase 2<br>`"综合简报"` → Phase 3<br>`"同行评审"` → Phase 4 |
-| **知识闭合** | `storm入库` → 将最近一次研究成果沉淀入库 |
-| **状态检查** | `storm状态` → 显示当前研究的进度和质量指标 |
-
-**边界**（明确不做什么）：
-- ❌ 不执行超过 100 次连续搜索（防滥用上限）
-- ❌ 不生成投资建议、医疗建议、法律意见（高风险决策需人工复核）
-- ❌ 不覆盖已有沉淀内容而不提示确认（增量更新而非强制覆写）
-- ❌ 不处理纯主观审美判断（艺术品味、个人偏好等非实证话题）
-
----
-
-## 快速开始
-
-```
-user: storm研究 某个研究主题
-
-Agent:
-1. 【L1 语义解析】识别为特定领域 / 复杂度
-2. 【L2 视角引擎】自动选取最优视角组合（含张力校验）
-3. 【L3 偏见防御】全程来源标记 + 红队检验
-4. 【L4 工具编排】自动执行搜索、验证、深度阅读
-5. 【L5 知识闭合】产出格式化研究报告并沉淀入库
-```
-
-**总耗时**: 3-5 分钟（对比手工 STORM 的 30-60 分钟）
-
----
-
-## 文件结构
-
-```
+```text
 storm-research/
-├── README.md                          # 本文件
-├── SKILL.md                           # Hermes Skill 主文件（触发词 + 详细用法）
+├── SKILL.md
+├── agents/openai.yaml
 ├── references/
-│   ├── theory.md                      # STORM 自适应架构完整理论
-│   ├── perspective-library.md         # 6 大类 30+ 视角完整定义与张力关系
-│   ├── bias-guardrails.md            # 偏见三级防御详细规则
-│   └── tool-recipes.md               # 每阶段精确工具调用链
-└── templates/
-    ├── concept-output.md             # 标准概念页输出模板
-    ├── storm-session.md              # 研究会话日志模板
-    ├── synthesis-report.md           # 综合简报模板
-    └── contradiction-map.md          # 分层矛盾地图模板
+│   ├── adaptive-algorithm.md
+│   ├── bias-guardrails.md
+│   ├── perspective-library.md
+│   ├── perspectives.json
+│   ├── theory.md
+│   └── tool-recipes.md
+├── schemas/session.schema.json
+├── scripts/
+│   ├── check_links.py
+│   ├── render_report.py
+│   ├── select_perspectives.py
+│   └── validate_session.py
+├── templates/
+└── tests/
 ```
 
----
+## Installation
 
-## 理论来源
-
-- **Stanford OVAL Lab** — STORM: Synthesis of Topic Outlines through Retrieval and Multi-perspective Question Asking (NAACL 2024)
-- **Mr Panda** — Skill 设计与四阶段沉淀法（触发词 · 边界 · 步骤 · 参考文件）
-
----
-
-## 质量指标验收标准
-
-每次研究完成后，系统输出自动评分报告：
-
-| 指标 | 及格线 | 优秀线 |
-|------|--------|--------|
-| 视角数量 | ≥3 | ≥5 |
-| 有效矛盾 | ≥1 | ≥3 |
-| 来源/断言 | ≥0.5 | ≥1.0 |
-| 置信度均值 | ≥0.6 | ≥0.75 |
-| 低置信度标注 | 100% | 100% |
-| 反方覆盖 | ≥50% | ≥80% |
-| 知识冲突检出 | 100% | 100% |
-
----
-
-## 安装
-
-### Hermes Agent
+Install the whole directory so the skill can access its references, scripts, schema, and templates.
 
 ```bash
-# 直接安装
-hermes skills install https://github.com/RobinZorro86/storm-research/blob/main/SKILL.md
-
-# 或手动复制到 skills 目录
-cp -r storm-research ~/.hermes/skills/research/
+git clone https://github.com/RobinZorro86/storm-research.git
+cp -R storm-research "${CODEX_HOME:-$HOME/.codex}/skills/storm-research"
 ```
 
-### Claude Code / Codex / 其他 Agent
+For other agent runtimes, place the directory in that runtime's skill location. Map the capability contract in [tool-recipes.md](references/tool-recipes.md) to the tools actually available; tool names are intentionally not hard-coded.
+
+## Usage
+
+Typical requests:
+
+```text
+Use storm-research to investigate whether our team should adopt this build system.
+Run a multi-perspective analysis of this policy proposal.
+Build a contradiction map for the evidence around this claim.
+Review this research brief for unsupported claims and missing counter-evidence.
+```
+
+Run deterministic perspective selection:
 
 ```bash
-# 复制 references/ 和 templates/ 到工作目录
-cp -r references/ ~/your-project/.agent-resources/
-cp -r templates/ ~/your-project/.agent-templates/
-
-# 直接使用 SKILL.md 中的 Prompt 模板（独立可用）
-cat references/perspective-library.md   # 视角库
-cat references/bias-guardrails.md      # 偏见防御规则
+python3 scripts/select_perspectives.py --domains tech,biz --complexity medium
 ```
 
----
+Validate a session and print coverage metrics:
 
-## 版本历史
+```bash
+python3 scripts/validate_session.py tests/fixtures/valid-session.json
+```
 
-| 版本 | 日期 | 变更 |
-|------|------|------|
-| **1.0.0** | 2026-06-19 | 初始版本：五层架构 + 自适应视角引擎 + 偏见三级防御 + 知识闭合 |
+Render a QA report:
 
----
+```bash
+python3 scripts/render_report.py \
+  tests/fixtures/valid-session.json \
+  outputs/qa/example-report.md
+```
 
-## 贡献
+## Safe knowledge closure
 
-- 作者: Robin.Z / Luffy Team
-- 方法论来源: Stanford OVAL Lab (NAACL 2024)
-- 构建框架: Hermes Agent Skill System
+The default write target is `outputs/qa/`. The skill does not automatically modify:
 
-## 许可证
+- compiled concept pages;
+- entity records;
+- immutable raw evidence;
+- its own perspective or bias rules;
+- Git history.
 
-MIT License — 详见 [LICENSE](LICENSE) 文件
+Formal ingestion remains the responsibility of the active knowledge-base workflow and requires its authorization.
+
+## Quality metrics
+
+The validator reports process coverage rather than unsupported accuracy scores:
+
+- claim citation coverage;
+- independent corroboration coverage;
+- primary-source coverage;
+- counter-evidence coverage;
+- unresolved-claim rate;
+- source-open success rate.
+
+These metrics are diagnostic. They are not calibrated probabilities or proof that a conclusion is correct.
+
+## Development
+
+Requires Python 3.9 or later. Runtime scripts use only the standard library; validation dependencies are used in CI.
+
+```bash
+python3 -m unittest discover -s tests -v
+python3 scripts/check_links.py
+python3 scripts/validate_session.py tests/fixtures/valid-session.json
+```
+
+CI also validates the session fixture against the JSON Schema and checks Skill frontmatter.
+
+## License
+
+MIT License. See [LICENSE](LICENSE).

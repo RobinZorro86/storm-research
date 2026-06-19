@@ -1,0 +1,9 @@
+{
+  "topic": "Unsupported conclusion",
+  "question_types": [],
+  "phase": "synthesis",
+  "perspectives": [],
+  "claims": [
+    {"id": "C1", "text": "An unsupported fact.", "kind": "factual", "impact": "high", "status": "verified", "sources": [], "counter_evidence": []}
+  ]
+}

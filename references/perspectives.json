@@ -1,0 +1,32 @@
+{
+  "tech": {
+    "core": ["tech-arch", "tech-sec"],
+    "pool": ["tech-user", "tech-pm", "tech-os", "tech-perf", "tech-opt", "tech-skept"],
+    "tension_pairs": [["tech-opt", "tech-skept"]]
+  },
+  "biz": {
+    "core": ["biz-customer", "biz-operator"],
+    "pool": ["biz-inv", "biz-pm", "biz-legal", "biz-growth", "biz-compete"],
+    "tension_pairs": [["biz-growth", "biz-legal"]]
+  },
+  "sci": {
+    "core": ["sci-exp", "sci-stat"],
+    "pool": ["sci-peer", "sci-meta", "sci-ind", "sci-pop"],
+    "tension_pairs": [["sci-peer", "sci-pop"]]
+  },
+  "soc": {
+    "core": ["soc-affected", "soc-policy"],
+    "pool": ["soc-ethic", "soc-media", "soc-hist", "soc-gov"],
+    "tension_pairs": [["soc-policy", "soc-affected"]]
+  },
+  "eng": {
+    "core": ["eng-dev", "eng-user"],
+    "pool": ["eng-sre", "eng-support", "eng-pm", "eng-arch"],
+    "tension_pairs": [["eng-dev", "eng-pm"]]
+  },
+  "phil": {
+    "core": ["phil-skept", "phil-prag"],
+    "pool": ["phil-construct", "phil-reduct", "phil-system", "phil-critical"],
+    "tension_pairs": [["phil-reduct", "phil-system"]]
+  }
+}

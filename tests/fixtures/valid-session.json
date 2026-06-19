@@ -1,0 +1,28 @@
+{
+  "topic": "Should a team adopt a new build system?",
+  "scope": "Decision support for a small engineering team",
+  "question_types": ["decision", "factual"],
+  "phase": "review",
+  "perspectives": [
+    {"id": "eng-dev", "name": "Engineer", "reason": "Implementation burden"},
+    {"id": "eng-user", "name": "User", "reason": "Developer experience"}
+  ],
+  "claims": [
+    {
+      "id": "C1",
+      "text": "The build system supports incremental compilation.",
+      "kind": "factual",
+      "impact": "high",
+      "status": "verified",
+      "evidence_strength": "moderate",
+      "sources": [
+        {"url": "https://example.com/docs", "title": "Official docs", "source_type": "documentation", "independence_group": "vendor", "primary": true, "opened": true, "supports_claim": true},
+        {"url": "https://example.org/test", "title": "Independent test", "source_type": "benchmark", "independence_group": "independent", "primary": false, "opened": true, "supports_claim": true}
+      ],
+      "counter_evidence": ["Checked known limitations and clean-build regressions."]
+    }
+  ],
+  "summary": "Run a time-boxed pilot before adoption.",
+  "implications": ["Measure clean and incremental build times."],
+  "open_questions": ["What is the migration cost?"]
+}

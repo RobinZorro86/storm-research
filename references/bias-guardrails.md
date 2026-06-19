@@ -1,208 +1,66 @@
-# 偏见三级防御规则与红队检验
+# Evidence and red-team rubric
 
-## 核心原则
+## Assertion gate
 
-**偏见不是"观点不同"，而是"系统性地扭曲事实以迎合某种先入之见"。**
+For every material factual claim, record:
 
-STORM 的已知弱点：系统不自检，来源偏见和事实错配会悄悄潜入。本防御系统不是消除偏见（不可能），而是**让所有偏见显性化、可度量、可拦截**。
+- exact claim text;
+- impact: high, medium, or low;
+- opened source URL and title;
+- source type and independence group;
+- whether the source is primary;
+- whether the source actually supports the claim;
+- status: verified, unresolved, or rejected;
+- evidence strength: strong, moderate, weak, or none.
 
----
+Do not use numeric confidence as if it were a calibrated probability.
 
-## 一级防御：断言级来源标记（Assertion-Level Provenance）
+## Source hierarchy
 
-### 执行规则
+Prefer evidence in this order when it exists:
 
-每一条研究产出的"事实性声明"（factual claim）必须携带元数据：
+1. original paper, dataset, specification, law, filing, source code, or first-party documentation;
+2. independent replication, audit, benchmark, or systematic review;
+3. reputable secondary analysis with transparent methods;
+4. expert commentary with disclosed identity and incentives;
+5. social or community anecdotes for hypothesis generation only.
 
-```markdown
-**断言**: "MiniMax M3 在中文理解上优于 GPT-4o"
-- **来源**: web_search("MiniMax M3 benchmark 2026") → 结果 3/10: minimaxi.com/blog/2026-03-m3-benchmark
-- **置信度**: 0.72 ⚠️ （单一来源，缺乏第三方独立验证）
-- **发布时间**: 2026-03-15
-- **来源类型**: 厂商博客（注意：可能存在利益冲突）
-- **待验证**: 需要检索 arXiv 或独立 benchmark 验证
-```
+Source type is not an automatic truth score. Check method quality, applicability, independence, date, and conflicts of interest.
 
-### 强制流转规则
+## Counter-evidence protocol
 
-| 情况 | 处理方式 |
-|------|---------|
-| 有来源 + 置信度 ≥0.7 | 允许进入 Phase 3 |
-| 有来源 + 置信度 0.5-0.7 | ⚠️ 标注"需谨慎对待"，允许进入 Phase 3 但必须在报告中显式标注 |
-| 有来源 + 置信度 <0.5 | 🔴 拦截，退回 Phase 1 重新验证或删除 |
-| 无来源 | 🔴 拦截，不得流转到 Phase 3 |
+For each high-impact factual claim:
 
-### 置信度计算因子
+1. State what observation would falsify or materially narrow it.
+2. Search for criticism, failed replication, contrary data, boundary conditions, and alternative causal explanations.
+3. Open the strongest counter-source.
+4. Record whether it rejects, narrows, or does not affect the claim.
+5. Leave the claim unresolved when the conflict cannot be adjudicated.
 
-| 因子 | 权重 | 说明 |
-|------|------|------|
-| 来源数量 | 0.3 | ≥3 个独立来源满分 |
-| 来源独立性 | 0.25 | 厂商自述=0.3，独立评测=1.0 |
-| 来源时效性 | 0.15 | 6 个月内=1.0，1 年内=0.8，2 年内=0.5 |
-| 方法透明度 | 0.15 | 公开方法论=1.0，黑箱=0.3 |
-| 可复制性 | 0.15 | 可独立复现=1.0，不可复现=0.2 |
+Do not create a weak opponent merely to satisfy a quota.
 
----
+## Bias checks
 
-## 二级防御：红队检验（Red Teaming）
+- source concentration: several citations trace to the same organization or dataset;
+- confirmation bias: supportive queries greatly outnumber falsification queries;
+- false balance: fringe disagreement is presented as equal to convergent evidence;
+- survivorship bias: only successful examples are visible;
+- framing bias: the question excludes affected stakeholders or alternative outcomes;
+- recency bias: new sources displace stronger older evidence without reason;
+- authority bias: reputation substitutes for methods;
+- social amplification: popularity is treated as representativeness;
+- citation laundering: secondary sources are cited instead of the underlying evidence;
+- over-association: related facts are combined into an unsupported causal story.
 
-### 核心理念
+## Auditable metrics
 
-不是"找一个反对观点"，而是"系统地寻找该断言最致命的反例"。
+Measure process coverage only:
 
-### Devil's Advocate 配对表
+- claim citation coverage;
+- independent corroboration coverage for high-impact factual claims;
+- primary-source coverage;
+- counter-evidence coverage;
+- unresolved-claim rate;
+- source-open success rate.
 
-| 正向社会视角 | 红队配对（Devil's Advocate） | 反驳焦点 |
-|-----------|---------------------------|---------|
-| 从业者 | 怀疑者 | "你只说成功案例，失败率是多少？" |
-| 学者 | 通俗科学作家 | "这个结论是否过度简化了复杂现实？" |
-| 投资者 | 受影响社区代表 | "利润是否来自负外部性转移？" |
-| 技术乐观主义者 | 卢德分子 | "如果最坏情况发生，代价是什么？" |
-| 政策制定者 | 受影响群体代表 | "政策效果是否被选择性呈现？" |
-| 产品经理 | 终端用户 | "功能是否真的解决了核心痛点？" |
-
-### 红队检验执行流程
-
-```
-对于 Phase 1 产出的每个视角卡片:
-  1. 提取该视角的核心立论（关键断言）
-  2. 确定其红队配对视角
-  3. 以红队视角提问："如果你是对手，你会怎么推翻这个立论？"
-  4. 自动检索反方证据:
-     - web_search("{assertion} 反驳 counterargument criticism")
-     - x_search("{assertion} 争议")
-  5. 生成红队批注（附在红队配对视角下方）
-```
-
-### 红队批注格式
-
-```markdown
-### 红队批注：针对「技术乐观主义者」的立论
-
-**原始立论**: "MiniMax M3 将彻底解决中文 AI 应用的可及性问题"
-
-**红队反驳**:
-1. **规模谬误**: 厂商声称"可及性"，但未披露 M3 的推理成本。
-   若每千 token 成本是 GPT-4o 的 3 倍，对中小开发者的"可及性"反而是下降的。
-   → 需要验证 pricing 信息
-2. **范围偏差**: "中文 AI 应用"是一个巨大范畴，M3 在文学创作上的优势
-   不必然转移到代码生成或数学推理。→ 需要分领域验证
-3. **因果混淆**: 可及性提升可能是价格战的结果，而非模型能力的突破。
-   → 需要区分"价格因素"和"能力因素"
-
-**红队结论**: 原立论可信度从 0.85 下调至 0.60 ⚠️
-**建议**: 补充 pricing 对比和各子领域 benchmark 后再评估
-```
-
----
-
-## 三级防御：全局知识冲突检测
-
-### 核心功能
-
-在 Phase 2 结束时，自动将新研究结论与 Wiki 已有知识进行对比，防止"新知识"与"旧知识"的隐性冲突。
-
-### 冲突分级
-
-| 等级 | 标记 | 说明 | 处理方式 |
-|------|------|------|---------|
-| 一致 | ✅ | 新知识与已有知识完全吻合 | 直接入库 |
-| 补充 | 🟢 | 新知识是已有知识的延伸 | 更新已有概念，追加 Timeline |
-| 部分冲突 | ⚠️ | 新知识修正了已有知识的某一部分 | 需要标注变更点，更新 C-XXX |
-| 严重矛盾 | 🔴 | 新知识推翻了已有知识的核心结论 | 暂停入库，提示用户裁决 |
-
-### 执行流程
-
-```
-1. 提取 Phase 2 中的所有关键实体和核心结论
-2. 对每个实体搜索 Wiki:
-   - grep "实体名" /Users/robin.z/Documents/Wiki/concepts/*.md
-   - grep "实体名" /Users/robin.z/Documents/Wiki/entities/*.md
-3. 对比已有结论与新结论
-4. 标记冲突等级
-5. 输出冲突检测报告:
-   - 涉及实体列表
-   - 每个实体的冲突等级
-   - 建议处理方式
-```
-
-### 严重矛盾时的用户提示
-
-```
-⚠️ 检测到严重知识冲突：
-
-新研究结论: "MiniMax M3 在代码生成上超越 Claude 3.5 Sonnet"
-已有知识 ([[concepts/C-078-CC-Switch]]): "Claude 3.5 Sonnet 仍是中文代码生成的最佳选择"
-
-请选择处理方式:
-1. 【覆盖更新】新结论更可靠，更新 C-078（需要用户提供理由）
-2. 【并存记录】两者都是特定条件下的结论，追加到 Timeline
-3. 【暂缓入库】需要进一步验证后再决定
-4. 【拆分概念】创建新概念页分别记录两个结论
-```
-
----
-
-## 偏见类型检测清单
-
-| 偏见类型 | 检测信号 | 防御措施 |
-|----------|---------|---------|
-| **来源偏见** | 多个断言来自同一来源 | 强制多源验证 |
-| **确认偏误** | 只检索支持性证据，忽略反对证据 | 红队检验强制检索反方 |
-| **锚定效应** | 第一个搜索结果被过度引用 | 随机化搜索结果展示顺序 |
-| **可得性启发** | 最近/最显眼的信息被高估 | 时间衰减权重 |
-| **权威崇拜** | 某大 V/机构的观点被无条件采信 | 标注来源类型和利益冲突 |
-| **幸存者偏差** | 只看到成功案例 | 强制追问失败率和反面案例 |
-| **叙述谬误** | 过度简化为一个连贯故事 | 矛盾地图强制展示断裂点 |
-| **团体迷思** | 多个视角趋同但缺乏真正分歧 | 张力引擎强制注入对立视角 |
-| **框架效应** | 同一事实因表述方式不同而被不同解读 | 多角度重述关键断言 |
-| **社媒放大效应** | 社媒情绪被误当作普遍共识 | **社媒来源置信度强制上限 0.70，只能作为情绪参考而非事实依据** |
-
-### 来源类型信心度校准（实战沉淀）
-
-**⚠️ 社媒来源的特殊处理规则**（C-093 实战教训）：
-
-Reddit、X/Twitter 等平台的内容属于 **anecdotal 证据**。无论观点多么引人注目，社媒来源的置信度**绝对上限为 0.70**，且必须满足以下条件才能使用：
-- ✅ 有明确的前因后果和时间线
-- ✅ 涉及具体的个人经历而非泛泛而谈
-- ✅ 有多个独立帖子/回复指向同一现象（形成"弱聚合"）
-- ❌ 单个热帖的 OP → 不得作为证据使用
-- ❌ 情绪化宣泄或讽刺评论 → 不得在视角卡片中引用
-
-**Confidence Ceiling by Source Type**（基于 C-093 评审经验校准）：
-
-| 来源类型 | 信心上限 | 说明 |
-|----------|---------|------|
-| 厂商博客/PR | 0.75 | 受营销驱动，需至少一个独立来源交叉验证 |
-| 社媒平台（X/Reddit） | 0.70 | Anecdotal only，不能单独构成事实断言 |
-| 付费评测/软文 | 0.60 | ⚠️ 需披露利益关系 |
-| YouTube 教育内容 | 0.70 | 教育意图不等于准确性，需标注商业赞助 |
-| 智库报告 | 0.82 | 仍有机构偏见可能（如保守派 vs 自由派智库） |
-| 同行评审论文 | 0.90 | 金标准，但仍需关注样本量和发表偏倚 |
-| 独立 benchmark | 0.88 | 方法论透明 + 可复现时，可逼近论文级别 |
-
----
-
-## 质量指标验收标准
-
-| 防御层级 | 指标 | 及格线 | 优秀线 |
-|---------|------|--------|--------|
-| 一级 | 断言来源标记率 | 100% | 100% |
-| 一级 | 平均置信度 | ≥0.65 | ≥0.80 |
-| 一级 | 低置信度（<0.7）标注率 | 100% | 100% |
-| 二级 | 红队批注覆盖率 | ≥70% | ≥90% |
-| 二级 | 反方来源检索率 | ≥50% | ≥80% |
-| 三级 | 已有知识冲突检出率 | 100% | 100% |
-| 三级 | 冲突处理明确率 | 100% | 100% |
-
----
-
-## 与 C-091 的改进对照
-
-| 问题 | C-091 原始方案 | 本防御系统 |
-|------|--------------|-----------|
-| 不自检 | Phase 4 才有 Peer Review | 全程三级防御，每阶段自检 |
-| 来源偏见 | 仅在 Phase 4 提醒 | 一级防御强制标记，未标记不得流转 |
-| 事实错配 | 依赖用户发现 | 三级防御自动对比 Wiki 已有知识 |
-| 隐性偏见 | 无检测机制 | 九种偏见类型检测清单 |
-| 反方覆盖 | 用户自选是否检索反方 | 红队检验强制执行 |
+These metrics do not measure truth, bias-detection accuracy, or research completeness. Such claims require a labeled benchmark and external evaluation.

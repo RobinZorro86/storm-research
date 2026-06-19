@@ -1,0 +1,4 @@
+interface:
+  display_name: "STORM Research"
+  short_description: "Source-grounded multi-perspective research and review"
+  default_prompt: "Use $storm-research to investigate this question with multiple perspectives, counter-evidence, and auditable sources."
